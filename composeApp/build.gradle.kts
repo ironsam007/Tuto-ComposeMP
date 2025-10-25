@@ -39,6 +39,12 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+
+            implementation(compose.material) //added
+            implementation(compose.materialIconsExtended) // <- Icons.Default.Search / Close
+
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

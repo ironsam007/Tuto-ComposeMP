@@ -15,4 +15,16 @@ import org.example.project.book.presentation.book_list.components.BookSearchBar
 @Preview
 @Composable
 private fun BookSearchBarPreview() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        BookSearchBar(
+            searchQuery = "",
+            onSearchQueryChange = {},
+            onImeSearch = {},
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }

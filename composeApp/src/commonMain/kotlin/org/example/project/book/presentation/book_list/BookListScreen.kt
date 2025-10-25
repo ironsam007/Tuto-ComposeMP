@@ -16,7 +16,8 @@ fun BookListScreenRoot(
     BookListScreen(
         state,
         onIntent = { intent ->
-            when(intent){
+            when(intent)
+            {
                 is BookListIntent.OnBookClick -> onBookClick(intent.book)
                 else -> Unit
             }

@@ -1,4 +1,4 @@
-package org.example.project.domain
+package org.example.project.book.domain
 
 data class Book(
     val id: String,

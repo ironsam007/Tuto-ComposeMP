@@ -35,7 +35,7 @@ import tuto_composemp.composeapp.generated.resources.search_hint
 fun BookSearchBar(
     searchQuery: String,
     onSearchQueryChange: (String)-> Unit,
-    onImeSearch: ()-> Unit,
+    onImeSearch: ()-> Unit,     //Input Methode Editor
     modifier: Modifier = Modifier
 ){
     OutlinedTextField(

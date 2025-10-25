@@ -1,10 +1,22 @@
 package org.example.project.book.presentation.book_list
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.example.project.book.domain.Book
+import org.example.project.book.presentation.book_list.components.BookSearchBar
+import org.example.project.core.presentation.DarkBlue
 
 
 @Composable
@@ -32,4 +44,27 @@ fun BookListScreen(
     state: BookListState,
     onIntent: (BookListIntent) -> Unit
 ){
+    val keyboardController = LocalSoftwareKeyboardController.current //gets a reference to the on-screen keyboard controller — the system object that can manually show or hide the soft keyboard (IME)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(DarkBlue)
+            .statusBarsPadding(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        BookSearchBar(
+            searchQuery =state.searchQuery,
+            onSearchQueryChange = {
+                onIntent(BookListIntent.OnSearchQueryChange(it))
+            },
+            onImeSearch ={},
+            modifier = Modifier
+                .widthIn(max = 400.dp)
+                .fillMaxSize()
+                .padding(16.dp)
+        )
+    }
+
+
 }

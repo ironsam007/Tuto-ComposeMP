@@ -18,11 +18,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.example.project.book.domain.Book
 import org.example.project.book.presentation.book_list.components.BookSearchBar
 import org.example.project.core.presentation.DarkBlue
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
 fun BookListScreenRoot(
-    viewModel: BookListViewModel,
+    viewModel: BookListViewModel = koinViewModel(),
     onBookClick: (Book) -> Unit
 ){
     val state by viewModel.state.collectAsStateWithLifecycle() //collect only when UI is active preventing leaks and wasted works.(recommanded to be used by defaults from google)

@@ -6,6 +6,9 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+
+
+    //alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -29,6 +32,11 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            //koin for android
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -43,6 +51,12 @@ kotlin {
 
             implementation(compose.material) //added
             implementation(compose.materialIconsExtended) // <- Icons.Default.Search / Close
+
+            //koin for compose
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            api(libs.koin.core)
+
 
 
         }

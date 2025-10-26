@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -17,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.text.input.ImeAction
@@ -38,61 +41,65 @@ fun BookSearchBar(
     onImeSearch: ()-> Unit,     //Input Methode Editor
     modifier: Modifier = Modifier
 ){
-    OutlinedTextField(
-        value = searchQuery,
-        onValueChange = onSearchQueryChange,
-        shape = RoundedCornerShape(100),
-        colors = OutlinedTextFieldDefaults.colors(
-            cursorColor = DarkBlue,
-            focusedBorderColor = SandYellow
-        ),
-        placeholder = {
-            Text(
-                text = stringResource(Res.string.search_hint)
-            )
-        },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search, //icons from material.icons.Icons
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.66f)
-            )
-        },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Search //what “action button” to show in the bottom-right corner (instead of just “Enter”, send, done ...).
-        ),
-        keyboardActions = KeyboardActions(
-            onSearch = {
-                onImeSearch() // what happens when the user presses that IME action key
-            }
-        ),
-        trailingIcon = {
-            AnimatedVisibility(
-                visible = searchQuery.isNotBlank()
-            ){
-                IconButton(
-                    onClick ={
-                        onSearchQueryChange("")
-                    }
-                ){
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(Res.string.close_hint),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
+    CompositionLocalProvider( //Whatd hell
+        LocalTextSelectionColors provides TextSelectionColors(
+            handleColor = SandYellow,
+            backgroundColor = SandYellow
+        )
+    ) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchQueryChange,
+            shape = RoundedCornerShape(100),
+            colors = OutlinedTextFieldDefaults.colors(
+                cursorColor = DarkBlue,
+                focusedBorderColor = SandYellow
+            ),
+            placeholder = {
+                Text(
+                    text = stringResource(Res.string.search_hint)
+                )
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search, //icons from material.icons.Icons
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.66f)
+                )
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Search //what “action button” to show in the bottom-right corner (instead of just “Enter”, send, done ...).
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    onImeSearch() // what happens when the user presses that IME action key
                 }
-            }
-        },
-        modifier = modifier //Search Bar will get Width from passed modifier
-            .background(
-                shape = RoundedCornerShape(100),
-                color = DesertWhite,
-            )
-            .minimumInteractiveComponentSize()
-
-
-    )
-
+            ),
+            trailingIcon = {
+                AnimatedVisibility(
+                    visible = searchQuery.isNotBlank()
+                ) {
+                    IconButton(
+                        onClick = {
+                            onSearchQueryChange("")
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(Res.string.close_hint),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            },
+            modifier = modifier //Search Bar will get Width from passed modifier
+                .background(
+                    shape = RoundedCornerShape(100),
+                    color = DesertWhite,
+                )
+                .minimumInteractiveComponentSize()
+        )
+    }
 }

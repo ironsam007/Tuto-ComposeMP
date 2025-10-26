@@ -15,13 +15,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,7 +61,10 @@ fun BookListItem(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
-                .height(IntrinsicSize.Min) //maximum needed
+                .height(IntrinsicSize.Min), //maximum needed
+            verticalAlignment = Alignment.CenterVertically, //added o fix spacing in preview BookListScreen
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+
         ) {
             Box(
                 modifier = Modifier.height(100.dp),
@@ -90,7 +92,7 @@ fun BookListItem(
                 )
 
                 when (val result = imageLoadResult) {
-                    null -> CircularProgressIndicator() //Todo: to be replaced with customized animation
+                    null -> {}//CircularProgressIndicator() //Todo: to be replaced with customized animation
                     else -> {
                         Image(
                             painter = if (result.isSuccess) painter else {

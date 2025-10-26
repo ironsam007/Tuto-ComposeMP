@@ -3,6 +3,7 @@ package org.example.project.book.presentation.book_list
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
@@ -25,6 +26,9 @@ fun BookListScreenRoot(
     onBookClick: (Book) -> Unit
 ){
     val state by viewModel.state.collectAsStateWithLifecycle() //collect only when UI is active preventing leaks and wasted works.(recommanded to be used by defaults from google)
+
+    //Calling BookListScreen with state, and onIntent() callback
+    //lambda passed for onIntent() trigger onBookClick if the intent is BookClick, and vm.onIntent() otherwise
     BookListScreen(
         state,
         onIntent = { intent ->
@@ -37,6 +41,7 @@ fun BookListScreenRoot(
         }
     )
 }
+
 
 // Screen will be fed by VM with MVI structure:
 @Composable
@@ -58,10 +63,12 @@ fun BookListScreen(
             onSearchQueryChange = {
                 onIntent(BookListIntent.OnSearchQueryChange(it))
             },
-            onImeSearch ={},
+            onImeSearch ={
+                keyboardController?.hide()
+            },
             modifier = Modifier
                 .widthIn(max = 400.dp)
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp)
         )
     }

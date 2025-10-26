@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.example.project.book.presentation.book_list.components.BookSearchBar
 
 
-@Preview
+//@Preview
 @Composable
 private fun BookSearchBarPreview() {
     Box(
@@ -27,4 +27,10 @@ private fun BookSearchBarPreview() {
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Preview
+@Composable
+fun AppAndroidPreview() {
+    App()
 }

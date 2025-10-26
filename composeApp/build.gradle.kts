@@ -57,6 +57,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.core)
 
+            implementation(libs.bundles.coil)
 
 
         }

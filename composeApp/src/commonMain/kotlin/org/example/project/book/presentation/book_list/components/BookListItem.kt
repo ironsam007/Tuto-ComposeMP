@@ -1,5 +1,7 @@
 package org.example.project.book.presentation.book_list.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,15 +31,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.setSingletonImageLoaderFactory
 import org.example.project.book.domain.Book
 import org.example.project.core.presentation.LightBlue
+import org.example.project.core.presentation.PulseAnimation
 import org.example.project.core.presentation.SandYellow
 import org.jetbrains.compose.resources.painterResource
 import tuto_composemp.composeapp.generated.resources.Res
@@ -91,8 +97,23 @@ fun BookListItem(
                     }
                 )
 
+                //Add painterState for transition
+                val painterState by painter.state.collectAsStateWithLifecycle()
+                val transition by animateFloatAsState(
+                    targetValue = if (painterState is AsyncImagePainter.State.Success) {
+                        1f
+                    } else {
+                        0f
+                    },
+                    animationSpec = tween(durationMillis = 800)
+                )
+
+
                 when (val result = imageLoadResult) {
-                    null -> {}//CircularProgressIndicator() //Todo: to be replaced with customized animation
+                    null -> PulseAnimation(
+                        modifier = Modifier.size(60.dp)
+                    )
+
                     else -> {
                         Image(
                             painter = if (result.isSuccess) painter else {
@@ -108,52 +129,57 @@ fun BookListItem(
                                 .aspectRatio(
                                     ratio = 0.65f,
                                     matchHeightConstraintsFirst = true
-                                )
-                        )
-                        Column(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                            //.weight(weight = 1f) //Todo: check this
-                            ,verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = book.title,
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            book.authors.firstOrNull()?.let { authorName ->
-                                Text(
-                                    text = authorName,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            book.averageRating?.let { rating ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = "${round(rating * 10) / 10.0}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.Star,
-                                        contentDescription = null,
-                                        tint = SandYellow
-                                    )
+                                ).graphicsLayer {
+                                    rotationX = (1f - transition) * 30f
+                                    val scale = 0.8f + (0.2f * transition)
+                                    scaleX = scale
+                                    scaleY = scale
                                 }
-                            }
-                        }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            modifier = Modifier.size(36.dp)
                         )
                     }
                 }
             }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                .weight(weight = 1f)
+                ,verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = book.title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                book.authors.firstOrNull()?.let { authorName ->
+                    Text(
+                        text = authorName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                book.averageRating?.let { rating ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${round(rating * 10) / 10.0}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = SandYellow
+                        )
+                    }
+                }
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                modifier = Modifier.size(36.dp)
+            )
         }
     }
 }

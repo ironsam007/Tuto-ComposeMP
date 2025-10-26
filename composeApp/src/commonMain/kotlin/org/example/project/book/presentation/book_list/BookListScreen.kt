@@ -123,7 +123,9 @@ fun BookListScreen(
 
         // version 2 - add Surface and TabRow for BookList: UI control bar with labeled tabs
         Surface(
-            modifier = Modifier.weight(1f).fillMaxWidth(),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
             color = DesertWhite,
             shape = RoundedCornerShape(
                 topStart = 32.dp,
@@ -143,7 +145,8 @@ fun BookListScreen(
                     indicator = { tabPositions ->
                         TabRowDefaults.SecondaryIndicator( //Todo: overwrite this indicator to offset the tab - remove purple bar
                             color = SandYellow,
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[state.selectedTabIndex])
+                            modifier = Modifier
+                                .tabIndicatorOffset(tabPositions[state.selectedTabIndex])
                         )
                     }
                 ){
@@ -156,7 +159,8 @@ fun BookListScreen(
                     ){
                         Text(
                             text = stringResource(Res.string.search_results),
-                            modifier = Modifier.padding(vertical = 12.dp)
+                            modifier = Modifier
+                                .padding(vertical = 12.dp)
                         )
                     }
                     Tab(

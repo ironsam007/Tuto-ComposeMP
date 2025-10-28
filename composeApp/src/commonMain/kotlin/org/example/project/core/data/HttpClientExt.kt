@@ -20,9 +20,9 @@ suspend inline fun <reified T>responseToResult(
     return when(response.status.value){
         in 200..299 -> { //HttpStatusCode starts with 2 -> OK
             try{
-                Result.Success(response.body<T>())
+                Result.Success(data = response.body<T>())
             }catch(e: NoTransformationFoundException){
-                Result.Error(DataError.Remote.SERIALIZATION)
+                Result.Error(error = DataError.Remote.SERIALIZATION)
             }
         }
         408 -> Result.Error(DataError.Remote.REQUEST_TIMEOUT)

@@ -14,16 +14,18 @@ import org.example.project.core.domain.Result
 private const val BASE_URL = "https://openlibrary.org"
 class KtorRemoteBookDataSource(
     private val httpClient: HttpClient
-) {
+    ) : RemoteBookDataSource {
+
     suspend fun searchBooks(
         query: String,
         resultLimit: Int? =null
-    ): Result<SearchResponseDto, DataError.Remote> { //As standard Result  take only one generic, we will write our own
-       return safeCall{
+    ): Result<SearchResponseDto, DataError.Remote>  //As standard "Result"  take only one generic, we will write our own
+    {
+       return safeCall<SearchResponseDto>{ //Typed with
            httpClient.get( //check out get(urlString, lambda as extension from RequestBuilder)
                urlString = "$BASE_URL/search.json"
            ){
-               parameter("q", query) //paramter is extension from RequestBuilder: our lambda will be an extension using extensions
+               parameter("q", query) //parameter is extension from RequestBuilder: our lambda will be an extension using extensions
                parameter("limit", resultLimit)
                parameter("languages", "eng")
                parameter("fields", "key, title,author_name,author_key,cover_edition_key,cover_i,ratings_average,ratings_count,first_publish_year,language,number_of_pages_median,edition_count")
@@ -31,3 +33,4 @@ class KtorRemoteBookDataSource(
            }
        }
 }
+

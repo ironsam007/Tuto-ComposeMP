@@ -10,7 +10,7 @@ import org.example.project.core.domain.map
 
 
 // Decoupling data from domain layer: results obtained in /data model and returned in /domain model //USING mappers
-// now this will be extend domain repo interface, and domain repo would be used app wide without arch violation
+// now this will extend domain repo interface, and domain repo would be used app wide without arch violation
 
 class DefaultBookRepository(
     private val remoteBookDataSource: RemoteBookDataSource

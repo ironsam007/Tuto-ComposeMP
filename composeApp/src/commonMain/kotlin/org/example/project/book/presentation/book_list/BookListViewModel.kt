@@ -19,8 +19,9 @@ import org.example.project.core.domain.onError
 import org.example.project.core.domain.onSuccess
 
 
-//Todo: Next understand how /domain BookRepository could be used in ViewModel after this changes, i mean its just an interface, and viewModel will need to call functionnalties
-//Implement listen to state change in searchQuery and trigger research accordingly.
+
+
+
 class BookListViewModel(
     private val bookRepository: BookRepository
 ): ViewModel() {

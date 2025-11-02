@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 
     //alias(libs.plugins.ksp)
 }

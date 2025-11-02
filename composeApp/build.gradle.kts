@@ -37,6 +37,9 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
 
+            //Add Ktor for android(jvm same as desktop): to be able to use httpEngine
+            implementation(libs.ktor.client.okhttp)
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -57,12 +60,18 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             api(libs.koin.core)
 
+            //Add coil bundle dep: check toml
             implementation(libs.bundles.coil)
+            //add ktor bundle dep: check toml
+            implementation(libs.bundles.ktor)
 
 
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+
+            //Add ktor http engine(not okHttp that's jvm only) we use darwin engine on IOS
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

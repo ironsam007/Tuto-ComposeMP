@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import org.example.project.app.App
 import org.example.project.book.domain.Book
 import org.example.project.book.presentation.book_list.BookListScreen
 import org.example.project.book.presentation.book_list.BookListState
@@ -36,7 +37,7 @@ private fun BookSearchBarPreview() {
 //@Preview
 @Composable
 fun AppAndroidPreview() {
-    App()
+//    App()
 }
 
 private val books = (1..100).map{

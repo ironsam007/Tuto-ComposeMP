@@ -18,9 +18,7 @@ import org.example.project.book.domain.Book
 import org.example.project.book.domain.BookRepository
 import org.example.project.core.domain.onError
 import org.example.project.core.domain.onSuccess
-
-
-
+import org.example.project.core.presentation.toUiText
 
 
 class BookListViewModel(
@@ -56,10 +54,6 @@ class BookListViewModel(
             started = SharingStarted.WhileSubscribed(5000L), //After the last collector stops wait 5s before stopping upstream(this prevent rapid start/stop when screen rotate)
             initialValue = _state.value // initial value to start from
             )
-    }
-
-
-
 
 
 

@@ -16,9 +16,9 @@ class KtorRemoteBookDataSource(
     private val httpClient: HttpClient
     ) : RemoteBookDataSource {
 
-    suspend fun searchBooks(
+    override suspend fun searchBooks(
         query: String,
-        resultLimit: Int? =null
+        resultLimit: Int?
     ): Result<SearchResponseDto, DataError.Remote>  //As standard "Result"  take only one generic, we will write our own
     {
        return safeCall<SearchResponseDto>{ //Typed with

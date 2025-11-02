@@ -42,6 +42,7 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
 
         }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -65,15 +66,19 @@ kotlin {
             implementation(libs.bundles.coil)
             //add ktor bundle dep: check toml
             implementation(libs.bundles.ktor)
-
-
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
 
+        nativeMain.dependencies {
             //Add ktor http engine(not okHttp that's jvm only) we use darwin engine on IOS
             implementation(libs.ktor.client.darwin)
         }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+
+
+
     }
 }
 

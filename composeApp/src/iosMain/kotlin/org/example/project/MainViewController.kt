@@ -7,9 +7,5 @@ import io.ktor.client.engine.darwin.Darwin
 import org.example.project.app.App
 
 fun MainViewController() = ComposeUIViewController {
-    App(
-        engine = remember{
-            Darwin.create()
-        }
-    )
+    App()
 }

@@ -9,19 +9,14 @@ import org.example.project.book.presentation.book_list.BookListScreenRoot
 import org.example.project.book.presentation.book_list.BookListViewModel
 import org.example.project.core.data.HttpClientFactory
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
-fun App(engine: HttpClientEngine) { //engine will be platform dependent, a value will be set for each pf
+fun App() { //engine will be platform dependent, a value will be set for each pf
+    val viewModel = koinViewModel<BookListViewModel>()
     BookListScreenRoot(
-        viewModel = remember{ BookListViewModel(
-            bookRepository = DefaultBookRepository(
-                remoteBookDataSource = KtorRemoteBookDataSource(
-                    httpClient = HttpClientFactory.create(engine)
-                )
-            )
-        )},
+        viewModel = viewModel,
         onBookClick = {}
-
     )
 }

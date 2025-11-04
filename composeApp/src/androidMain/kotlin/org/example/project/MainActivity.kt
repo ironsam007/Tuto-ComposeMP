@@ -16,13 +16,10 @@ import org.example.project.app.App
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setContent {
-            App(
-                engine = remember { OkHttp.create() } //EngineFactory
-            )
+            App()
         }
     }
 }

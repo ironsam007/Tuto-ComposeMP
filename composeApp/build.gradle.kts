@@ -66,6 +66,10 @@ kotlin {
             implementation(libs.bundles.coil)
             //add ktor bundle dep: check toml
             implementation(libs.bundles.ktor)
+
+            //add compose nav from jetbrains
+            implementation(libs.jetbrains.compose.navigation)
+            
         }
 
         nativeMain.dependencies {

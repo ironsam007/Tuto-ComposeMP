@@ -16,6 +16,7 @@ kotlin = "2.2.20"
 koin = "4.0.0"
 coil3 = "3.0.0-rc02"
 ktor = "3.0.0"
+navigationCompose = "2.8.0-alpha10"
 
 #ksp = "2.0.20-1.0.24"
 
@@ -54,6 +55,8 @@ ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "k
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 
+#Adding nav-jetbrains
+jetbrains-compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref= "navigationCompose"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

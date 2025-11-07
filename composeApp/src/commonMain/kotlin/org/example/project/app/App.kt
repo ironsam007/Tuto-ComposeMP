@@ -1,7 +1,10 @@
 package org.example.project.app
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import io.ktor.client.engine.HttpClientEngine
 import org.example.project.book.data.network.KtorRemoteBookDataSource
 import org.example.project.book.data.repository.DefaultBookRepository
@@ -13,10 +16,22 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 @Preview
-fun App() { //engine will be platform dependent, a value will be set for each pf
-    val viewModel = koinViewModel<BookListViewModel>()
-    BookListScreenRoot(
-        viewModel = viewModel,
-        onBookClick = {}
-    )
+fun App() {
+//    val viewModel = koinViewModel<BookListViewModel>()
+//    BookListScreenRoot(
+//        viewModel = viewModel,
+//        onBookClick = {}
+//    )
+
+    MaterialTheme{
+        val navController = rememberNavController()
+        NavHost(
+            navController = navController,
+            startDestination = Route.BookGraph
+        ){
+
+        }
+
+    }
+
 }

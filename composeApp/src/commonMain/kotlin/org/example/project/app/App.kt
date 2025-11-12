@@ -10,6 +10,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -60,7 +63,7 @@ fun App() {
                 composable<Route.BookDetail> { entry -> //args we navigated with
                     val args = entry.toRoute<Route.BookDetail>()
                     val selectedBookViewModel =
-                        entry.sharedKoinViewModel<SelectedBookViewModel>(navController)
+                        entry.sharedKoinViewModel<SelectedBookViewModel>(navController) //my generic function will be Typed by SelectedBookVM
                     val selectedBook by selectedBookViewModel.selectedBook.collectAsStateWithLifeCycle()
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -73,4 +76,29 @@ fun App() {
         }
     }
 }
+
+
+/* This function works with any typeof viewModel and any type of Nav Graph and screen feature structure.
+  - restricting generic T to be a subClass of viewModel
+  - reified so generic type cannot be removed at runtime - and so function and thus Koin can  access the actual type at RT(correct viewModel instance like T::class.java)
+    => Without: call    -> sharedKoinViewModel(SelectedBookVM::class)
+    => With : call      -> sharedKoinViewModel<SelectedBookVM>()
+*/
+
+@Composable
+private inline fun <reified T: ViewModel> NavBackStackEntry.sharedKoinViewModel( //Extension of NavBackStackEntry
+    navController: NavController
+): T {
+    val navGraphRoute = destination.parent?.route?: return koinViewModel<T>()
+    val parentEntry = remember(this){ // backStack Entry of NavGraph
+        navController.getBackStackEntry(navGraphRoute)
+    }
+
+    //explicitly scope this VM to parent NavGraph, rather than NavBackStack entry that is scoped to a single screen
+    return koinViewModel(
+        viewModelStoreOwner = parentEntry
+    )
+
+}
+
 

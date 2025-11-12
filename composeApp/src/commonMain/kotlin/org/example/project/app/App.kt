@@ -7,10 +7,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -64,7 +66,7 @@ fun App() {
                     val args = entry.toRoute<Route.BookDetail>()
                     val selectedBookViewModel =
                         entry.sharedKoinViewModel<SelectedBookViewModel>(navController) //my generic function will be Typed by SelectedBookVM
-                    val selectedBook by selectedBookViewModel.selectedBook.collectAsStateWithLifeCycle()
+                    val selectedBook by selectedBookViewModel.selectedBook.collectAsStateWithLifecycle()
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -82,19 +84,24 @@ fun App() {
   - restricting generic T to be a subClass of viewModel
   - reified so generic type cannot be removed at runtime - and so function and thus Koin can  access the actual type at RT(correct viewModel instance like T::class.java)
     => Without: call    -> sharedKoinViewModel(SelectedBookVM::class)
-    => With : call      -> sharedKoinViewModel<SelectedBookVM>()
+    => With : call      -> sharedKoinViewModel<SelectedBookVM>(navController)
 */
 
 @Composable
 private inline fun <reified T: ViewModel> NavBackStackEntry.sharedKoinViewModel( //Extension of NavBackStackEntry
     navController: NavController
 ): T {
-    val navGraphRoute = destination.parent?.route?: return koinViewModel<T>()
-    val parentEntry = remember(this){ // backStack Entry of NavGraph
+    //1 - compute parentEntry(NavBackStackEntry) by navController.getBackStackEntry(Route: String)
+
+    //if parent Graph' route is null then return KoinViewModel<T> without scoping this vm to parent navGraph
+    val navGraphRoute = destination.parent?.route ?: return koinViewModel<T>()
+    val parentEntry = remember(this){ //remember "this" (of NavBackStackEntry) if it has the same value after recomposition, otherwise get it from calculation lambda{}
         navController.getBackStackEntry(navGraphRoute)
     }
 
-    //explicitly scope this VM to parent NavGraph, rather than NavBackStack entry that is scoped to a single screen
+
+    //2 - Explicitly scope this VM to parent Nav Graph(parentEntry),
+    // rather than NavBackStackEntry that is scoped to a single screen
     return koinViewModel(
         viewModelStoreOwner = parentEntry
     )

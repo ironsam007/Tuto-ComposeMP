@@ -26,7 +26,6 @@ KoinAppDeclaration defined as   "typealias KoinAppDeclaration = KoinApplication.
         -> any future di will be delt on this instance context.
 
 
-
 Kotlin's trailing-lambda syntax: Write lambda outside the parentheses
 
 */

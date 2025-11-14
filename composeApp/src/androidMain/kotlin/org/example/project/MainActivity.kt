@@ -17,10 +17,16 @@ import org.example.project.app.App
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
             App()
         }
     }
 }
 
+
+
+@Preview
+@Composable
+fun BookDetailScreenPreview(){
+
+}

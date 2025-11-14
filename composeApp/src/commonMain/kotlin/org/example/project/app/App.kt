@@ -23,8 +23,9 @@ import org.example.project.book.presentation.book_list.BookListViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
+
+
 @Composable
-@Preview
 fun App() {
     MaterialTheme {
         val navController = rememberNavController()

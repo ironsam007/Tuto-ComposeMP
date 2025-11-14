@@ -6,20 +6,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.example.project.book.presentation.book_detail.components.BlurredImageBackground
-import org.example.project.book.presentation.book_list.BookListState
 
 
 @Composable
 fun BookDetailScreenRoot(
     viewModel: BookDetailViewModel,
-    onBookClick: () -> Unit
+    onBackClick: () -> Unit
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
     BookDetailScreen(
         state = state,
         onAction = { action ->
             when(action){
-                is BookDetailAction.OnBookClick -> onBookClick()
+                is BookDetailAction.OnBackClick -> onBackClick()
                 else -> Unit
             }
             viewModel.onAction(action)
@@ -41,7 +40,7 @@ fun BookDetailScreen(
             onAction(BookDetailAction.OnFavoriteClick)
         },
         onBackClick = {
-            onAction(BookDetailAction.OnBookClick)
+            onAction(BookDetailAction.OnBackClick)
         },
         modifier = Modifier.fillMaxSize()
     ){}

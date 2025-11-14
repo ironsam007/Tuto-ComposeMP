@@ -1,16 +1,11 @@
 package org.example.project.app
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
@@ -19,14 +14,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import io.ktor.client.engine.HttpClientEngine
-import org.example.project.book.data.network.KtorRemoteBookDataSource
-import org.example.project.book.data.repository.DefaultBookRepository
 import org.example.project.book.presentation.SelectedBookViewModel
+import org.example.project.book.presentation.book_detail.BookDetailAction
+import org.example.project.book.presentation.book_detail.BookDetailScreenRoot
+import org.example.project.book.presentation.book_detail.BookDetailViewModel
 import org.example.project.book.presentation.book_list.BookListScreenRoot
 import org.example.project.book.presentation.book_list.BookListViewModel
-import org.example.project.core.data.HttpClientFactory
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -40,38 +33,55 @@ fun App() {
             startDestination = Route.BookGraph
         ) {   //Define Navigation graph
 
-            navigation<Route.BookGraph>(startDestination = Route.BookList) {
-
+            navigation<Route.BookGraph>(startDestination = Route.BookList)
+            {
                 composable<Route.BookList> {
+                    //this vm only lives while BookListScreen is on BackStack
                     val viewModel = koinViewModel<BookListViewModel>()
-                    val selectedBokViewModel =
-                        it.sharedKoinViewModel<SelectedBookViewModel>(navController) //it: navBackStack entry
 
+                    //This one can outlive any BackStackEntry/Screen, will be scoped to parent Nav Graph(parentEntry) of the NavBackStackEntry
+                    val selectedBokViewModel = it.sharedKoinViewModel<SelectedBookViewModel>(navController)
+
+                    //Unselect Book when you are on BookList
                     LaunchedEffect(true) {
-                        selectedBokViewModel.onSelectedBook(null)  //BookSelection at Launch is null
+                        selectedBokViewModel.onSelectedBook(null)
                     }
 
+                    //Render BookListScreen
                     BookListScreenRoot(
                         viewModel = viewModel,
                         onBookClick = { book -> //when book clicked -> navigate
-                            selectedBokViewModel.onSelectedBook(book) //integrate BookSelection VM at click
-
+                            selectedBokViewModel.onSelectedBook(book) //Update selected Book in BookSelection VM
                             navController.navigate(
-                                Route.BookDetail(book.id)
+                                Route.BookDetail(book.id)   //Navigate to BookDetail of passed book.id
                             )
                         }
                     )
                 }
-                composable<Route.BookDetail> { entry -> //args we navigated with
-                    val args = entry.toRoute<Route.BookDetail>()
-                    val selectedBookViewModel =
-                        entry.sharedKoinViewModel<SelectedBookViewModel>(navController) //my generic function will be Typed by SelectedBookVM
+
+                composable<Route.BookDetail> {
+                    //Scoped to Parent NavGraph
+                    val selectedBookViewModel = it.sharedKoinViewModel<SelectedBookViewModel>(navController)
+
+                    //get the selected Book in BookList from Shared viewModel
                     val selectedBook by selectedBookViewModel.selectedBook.collectAsStateWithLifecycle()
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Book is $selectedBook")
+
+                    //get an instance of BookDetailViewModel from koin
+                    val viewModel = koinViewModel<BookDetailViewModel>()
+
+                    //Render BookDetail screen
+                    BookDetailScreenRoot(
+                        viewModel = viewModel,
+                        onBackClick = {
+                            navController.navigateUp() //navigate to previous screen when clicked on Back
+                        }
+                    )
+
+                    //when selectedBook change submit that change to BookDetail VM so that BookDetailScreen can be recomposed
+                    LaunchedEffect(selectedBook){
+                        selectedBook?.let{
+                            viewModel.onAction(BookDetailAction.OnSelectedBookChange(it))
+                        }
                     }
                 }
             }

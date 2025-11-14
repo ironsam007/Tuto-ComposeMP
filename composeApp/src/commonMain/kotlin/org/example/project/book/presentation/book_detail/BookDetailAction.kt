@@ -4,7 +4,7 @@ import org.example.project.book.domain.Book
 
 
 sealed interface BookDetailAction {
-    data object OnBookClick: BookDetailAction
+    data object OnBackClick: BookDetailAction
     data object OnFavoriteClick: BookDetailAction
     data class OnSelectedBookChange(val book: Book): BookDetailAction
 }

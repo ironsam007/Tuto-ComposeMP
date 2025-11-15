@@ -17,5 +17,15 @@ class DefaultBookRepository(
     override suspend fun searchBooks(query: String): Result<List<Book>, DataError.Remote >{
         return remoteBookDataSource.searchBooks(query).map { dto -> dto.results.map { it -> it.toBook() } }
     }
+
+    override suspend fun getBookDescription(bookId: String): Result<String?, DataError> {
+
+
+        //To be update when room is integrated
+        return remoteBookDataSource
+            .getBookDetails(bookId)
+            .map { it.description }
+    }
+
 }
 

@@ -1,5 +1,6 @@
 package org.example.project.book.data.network
 
+import org.example.project.book.data.dto.BookWorkDto
 import org.example.project.book.data.dto.SearchResponseDto
 import org.example.project.book.domain.BookRepository
 import org.example.project.core.domain.DataError
@@ -18,5 +19,8 @@ interface RemoteBookDataSource{
     suspend fun searchBooks(
         query: String,
         resultLimit: Int? = null): Result<SearchResponseDto, DataError.Remote>
+
+    suspend fun getBookDetails(bookWorkId: String): Result<BookWorkDto, DataError.Remote>
+
 }
 

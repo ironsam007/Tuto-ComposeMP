@@ -3,6 +3,7 @@ package org.example.project.book.data.network
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import org.example.project.book.data.dto.BookWorkDto
 import org.example.project.book.data.dto.SearchResponseDto
 import org.example.project.book.domain.Book
 import org.example.project.core.data.safeCall
@@ -32,5 +33,14 @@ class KtorRemoteBookDataSource(
            }
            }
        }
+
+    override suspend fun getBookDetails(bookWorkId: String): Result<BookWorkDto, DataError.Remote> {
+        return safeCall<BookWorkDto> { //Explicit type, if error check HttpClientExt : <reified T>
+            httpClient.get(
+                urlString = "$BASE_URL/works/$bookWorkId.json"
+            )
+        }
+    }
+
 }
 

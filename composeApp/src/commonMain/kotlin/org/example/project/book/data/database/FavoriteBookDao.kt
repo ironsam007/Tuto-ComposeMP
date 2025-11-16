@@ -14,7 +14,7 @@ interface FavoriteBookDao{
     suspend fun upsert(book: BookEntity) // insert a book in room table BookEntity
 
     @Query("SELECT * FROM BookEntity")
-    suspend fun getFavoriteBooks(): Flow<List<BookEntity>> //get all books
+    fun getFavoriteBooks(): Flow<List<BookEntity>> //get all books
 
     @Query("SELECT * FROM BookEntity WHERE id = :id")
     suspend fun getFavoriteBook(id : String): BookEntity? //get book by id

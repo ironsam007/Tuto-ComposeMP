@@ -11,7 +11,7 @@ import org.example.project.book.domain.Book
 interface FavoriteBookDao{
 
     @Upsert
-    suspend fun upsert(book: BookEntity) // insert a book in room db
+    suspend fun upsert(book: BookEntity) // insert a book in room table BookEntity
 
     @Query("SELECT * FROM BookEntity")
     suspend fun getFavoriteBooks(): Flow<List<BookEntity>> //get all books
@@ -21,5 +21,5 @@ interface FavoriteBookDao{
 
     @Query("DELETE FROM BookEntity WHERE id = :id")
     suspend fun deleteFavoriteBook(id: String)
-    
+
 }

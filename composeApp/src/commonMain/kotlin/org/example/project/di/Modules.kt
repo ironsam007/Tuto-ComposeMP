@@ -23,6 +23,8 @@ import org.koin.dsl.module
 expect val platformModule: Module //click on add missing Actual declaration.=>Create **Module files**
 
 val sharedModule = module {  //this Module is a container for shared dependencies
+
+    //=> Create a singleton(for entire app) of HttpClient by calling HttpClientFactory.create() and pass to it one dependency resolved from koin using get()
     single { HttpClientFactory.create(get()) } //the engine here is platform dependent -> get() instruct koin to try to get a dependency..to be set later, cuze if not provided, koin will crash.
     //now that i have an HttpClientInstance, i can use it in KtorRemoteBookDataSource instantiation block.
     //NB: why koin is seen as a service locater compared to Dagger -> got a pool of objects, when need one it access it from there.
@@ -35,13 +37,15 @@ val sharedModule = module {  //this Module is a container for shared dependencie
     viewModelOf(::SelectedBookViewModel)
     viewModelOf(::BookDetailViewModel)
 
+    //Provide a singleton instance of the database by calling create() on a DatabaseFactory retrieved from Koin, set a driver (here BundledSQLiteDriver), and build the database.
     single {
-        get<DatabaseFactory>().create() //we dont have definition in koin of dababaseFactory (cuz dep on pf)-> thats why create and provide this in koin need to be done on pf modules: check later
-            .setDriver(BundledSQLiteDriver())
+        get<DatabaseFactory>().create() //we dont have definition in koin for DatabaseFactory (cuz dep on pf)-> thats why create and provide this in koin need to be done on pf modules: check later
+            .setDriver(BundledSQLiteDriver()) //On native/Multiplatform (SQLDelight or Room on KMP), you need to set the SQLite driver for the database.
             .build()
     }
-    single{
-        get<FavoriteBookDatabase>().favoriteBookDao
-    }
+
+    //=> create a singleton instance of FavoriteBookDao by getting the FavoriteBookDatabase instance registred in koin and returning its favoriteBookDao property
+    //When someone ask for favoriteBookDao return the DAO from the existing db instance
+    single{ get<FavoriteBookDatabase>().favoriteBookDao }
 
 }

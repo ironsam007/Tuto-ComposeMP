@@ -1,5 +1,8 @@
 package org.example.project.di
 
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import org.example.project.book.data.database.DatabaseFactory
+import org.example.project.book.data.database.FavoriteBookDatabase
 import org.example.project.book.data.network.KtorRemoteBookDataSource
 import org.example.project.book.data.network.RemoteBookDataSource
 import org.example.project.book.data.repository.DefaultBookRepository
@@ -31,5 +34,14 @@ val sharedModule = module {  //this Module is a container for shared dependencie
     viewModelOf(::BookListViewModel)
     viewModelOf(::SelectedBookViewModel)
     viewModelOf(::BookDetailViewModel)
+
+    single {
+        get<DatabaseFactory>().create() //we dont have definition in koin of dababaseFactory (cuz dep on pf)-> thats why create and provide this in koin need to be done on pf modules: check later
+            .setDriver(BundledSQLiteDriver())
+            .build()
+    }
+    single{
+        get<FavoriteBookDatabase>().favoriteBookDao
+    }
 
 }

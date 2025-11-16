@@ -17,10 +17,12 @@ import org.example.project.core.domain.onSuccess
 
 class BookDetailViewModel(
     private val bookRepository: BookRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle //nav args passed to viewModel via JPack nav and DI
 ): ViewModel() {
 
-    private val bookId = savedStateHandle.toRoute<Route.BookDetail>().id //Todo: from nav args
+
+    // turn saved arg into route class Route.BookDetail then read the id from it (type safe)
+    private val bookId = savedStateHandle.toRoute<Route.BookDetail>().id
 
     private val _state = MutableStateFlow(BookDetailState())
     val state = _state //fetch here on start

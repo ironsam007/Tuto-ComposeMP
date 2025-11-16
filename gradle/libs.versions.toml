@@ -1,6 +1,6 @@
 [versions]
-agp = "8.11.2"
-android-compileSdk = "36"
+agp = "8.11.2" #less version LP has 8.5.2
+android-compileSdk = "36" #Less version PL has 25
 android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activity = "1.11.0"
@@ -18,7 +18,9 @@ coil3 = "3.0.0-rc02"
 ktor = "3.0.0"
 navigationCompose = "2.8.0-alpha10"
 
-#ksp = "2.0.20-1.0.24"
+ksp = "2.2.20-2.0.4"  #"2.0.20-1.0.24"
+sqlite = "2.5.0-alpha11"
+room = "2.7.0-alpha11"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -58,6 +60,12 @@ ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 #Adding nav-jetbrains
 jetbrains-compose-navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref= "navigationCompose"}
 
+#Adding Room-runtime dep and rom-compiler to be applied by ksp, and add sqlite as room not support ios
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -67,8 +75,9 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
-#KSP plugin
-#ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "room" } #Will use KSP for room annotation/Symbol processing instead of old KAPT
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
 
 [bundles]
 coil = [

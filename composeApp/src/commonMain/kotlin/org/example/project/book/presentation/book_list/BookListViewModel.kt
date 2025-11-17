@@ -23,14 +23,13 @@ import org.example.project.core.presentation.toUiText
 
 class BookListViewModel(
     private val bookRepository: BookRepository
-): ViewModel() {
+) : ViewModel() {
 
-    private var searchJob: Job? = null // for concurrency control: cancel search if there is new one
     private var cachedBooks = emptyList<Book>()
+    private var searchJob: Job? = null // for concurrency control: cancel search if there is new one
+    private var observeFavoriteJob: Job? = null //this needed cuz u call the function in onSTart and the job could les 5s
 
-
-
-    private val _state = MutableStateFlow(BookListState()) //Internal stateFlow, can be modified on VM level
+    private val _state = MutableStateFlow(BookListState())
 
     /*
     With .asStateFlow() only expose as readOnly stateflow:
@@ -43,78 +42,83 @@ class BookListViewModel(
     With .stateIn(): convert Flow into Hot StateFlow with controller sharing rules.
 
     */
-    val state = _state
-        .onStart { //when flow start being collected
-        if (cachedBooks.isEmpty()) { //even after the flow start being collected, we will lazily observe search query only when cachedBooks is empty
+    val state = _state.onStart {
+        if(cachedBooks.isEmpty()) {
             observeSearchQuery()
         }
-        }
-        .stateIn( //converting this flow into hot stateFlow, with sharing rules:
+        observeFavoriteBooks()
+    }
+        .stateIn(
             viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L), //After the last collector stops wait 5s before stopping upstream(this prevent rapid start/stop when screen rotate)
-            initialValue = _state.value // initial value to start from
-            )
+            SharingStarted.WhileSubscribed(5000L),
+            _state.value
+        )
 
-
-
-    /*
-    onIntent(): should be called within UI to handle all defined user intents on BookListScreen,
-     */
-    fun onIntent(intent: BookListIntent){
-        when(intent){
+    fun onIntent(action: BookListIntent) {
+        when (action) {
             is BookListIntent.OnBookClick -> {
 
             }
-            is BookListIntent.OnTabSelected -> {
-                _state.update{
-                    it.copy(selectedTabIndex = intent.index)
+
+            is BookListIntent.OnSearchQueryChange -> {
+                _state.update {
+                    it.copy(searchQuery = action.query)
                 }
             }
-            is BookListIntent.OnSearchQueryChange -> {
-                //_state.value.copy(searchQuery = intent.query) not thread safe, risk for concurrent update
-                _state.update{
-                    it.copy(intent.query)
+
+            is BookListIntent.OnTabSelected -> {
+                _state.update {
+                    it.copy(selectedTabIndex = action.index)
                 }
             }
         }
     }
 
+    //++
+    private fun observeFavoriteBooks() {
+        observeFavoriteJob?.cancel()
+        observeFavoriteJob = bookRepository
+            .getFavoriteBooks()
+            .onEach { favoriteBooks ->
+                _state.update { it.copy(
+                    favoriteBooks = favoriteBooks
+                ) }
+            }
+            .launchIn(viewModelScope)
+    }
 
-    /*
-     observeSearchQuery(): Listen to any state change in searchQuery and trigger research
-    */
-    private fun observeSearchQuery(){
+    //listen to state change in searchQuery and trigger research
+    private fun observeSearchQuery() {
         state
-            .map {it.searchQuery} //create new Flow<String> that emits the latest searchQuery every time BookListState changes / Still a transformer but here, for over time
+            .map { it.searchQuery }
             .distinctUntilChanged()
-            .debounce(500L)
+            .debounce(500L) //stop typing inter-temp
             .onEach { query ->
-                when{
+                when {
                     query.isBlank() -> {
-                        _state.update{
+                        _state.update {
                             it.copy(
                                 errorMessage = null,
-                                searchResults = cachedBooks // added above
+                                searchResults = cachedBooks
                             )
                         }
                     }
 
-                    query.length >=2 -> {
-                        searchJob?.cancel()             // cancel the old search Job
-                        searchJob = searchBooks(query)  // launch new search job
+                    query.length >= 2 -> {
+                        searchJob?.cancel() //SSS from searchBooks
+                        searchJob = searchBooks(query)
                     }
                 }
             }
-            .launchIn(viewModelScope) //launch the collection of this flow in vm scope
+            .launchIn(viewModelScope)
     }
 
-    private fun searchBooks(query: String) = viewModelScope.launch { //searchBooks should be asynchronous AND will be launched as viewModelScope coroutine
+    private fun searchBooks(query: String) = viewModelScope.launch { //lately make body inside viewModelScope, more concurrency control, cancel previous search if there is new one (easy with job) check SSS
         _state.update {
             it.copy(
                 isLoading = true
             )
         }
-
         bookRepository
             .searchBooks(query)
             .onSuccess { searchResults ->
@@ -131,10 +135,9 @@ class BookListViewModel(
                     it.copy(
                         searchResults = emptyList(),
                         isLoading = false,
-                        errorMessage = error.toUiText() // to be created dataErrorToStringResources extension from dataError
+                        errorMessage = error.toUiText() //create DataErrorToStringResource extention from DataError
                     )
                 }
             }
-
     }
 }

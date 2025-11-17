@@ -107,7 +107,7 @@ fun BookListItem(
                 )
 
                 when (val result = imageLoadResult) {
-                    null -> PulseAnimation(
+                    null -> PulseAnimation(                     //Here: Updated, in Blured it will need the box to be centered
                         modifier = Modifier.size(60.dp)
                     )
                     else -> {
@@ -126,7 +126,7 @@ fun BookListItem(
                                     ratio = 0.65f,
                                     matchHeightConstraintsFirst = true
                                 )
-                                .graphicsLayer {
+                                .graphicsLayer { //Here, completion: Animate=ion of image loaded with graphicLayer
                                     rotationX = (1f - transition) * 30f
                                     val scale = 0.8f + (0.2f * transition)
                                     scaleX = scale

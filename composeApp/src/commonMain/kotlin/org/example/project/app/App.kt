@@ -1,6 +1,8 @@
 package org.example.project.app
 
 
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,7 +62,11 @@ fun App() {
                     )
                 }
 
-                composable<Route.BookDetail> {
+                //Adding Animation for BookDetailScreen transition(enter, exit)
+                composable<Route.BookDetail>(
+                    enterTransition = { slideInHorizontally { initialOffset -> initialOffset } },
+                    exitTransition = { slideOutHorizontally { initialOffset -> initialOffset } }
+                ) {
                     //Scoped to Parent NavGraph
                     val selectedBookViewModel = it.sharedKoinViewModel<SelectedBookViewModel>(navController)
 

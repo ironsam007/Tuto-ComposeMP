@@ -36,24 +36,25 @@ class BookListViewModel(
         -> no lifeCycle awareness: if no one collects, _state still exists but u can't delay or controll emission:
         -> can't intercept when collection start: ability to run logic when ui starts observing.
     With .onStart{} u can run side effects when the flow starts being collected,
-        -> in our case, call observeSearchQuery ony when cache is empty
-            => Lazily initialize only when needed, not immediately or at construction.
+        => in our case, call observeSearchQuery ony when cache is empty
+        => Lazily initialize only when needed, not immediately or at construction.
 
     With .stateIn(): convert Flow into Hot StateFlow with controller sharing rules.
 
     */
     val state = _state.onStart {
         if(cachedBooks.isEmpty()) {
-            observeSearchQuery()
+            observeSearchQuery() //only start listening for queries if not already loaded
         }
         observeFavoriteBooks()
     }
         .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            _state.value
+            viewModelScope,                                                  //scope tied to viewMode
+            SharingStarted.WhileSubscribed(5000L), //keep flow active up to 5s after last observer
+            _state.value                                          //initial value
         )
 
+    //Handle UI intent:
     fun onIntent(action: BookListIntent) {
         when (action) {
             is BookListIntent.OnBookClick -> {

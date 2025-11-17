@@ -7,6 +7,8 @@ import androidx.navigation.toRoute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -17,18 +19,16 @@ import org.example.project.core.domain.onSuccess
 
 class BookDetailViewModel(
     private val bookRepository: BookRepository,
-    private val savedStateHandle: SavedStateHandle //nav args passed to viewModel via JPack nav and DI
+    private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-
-    // turn saved arg into route class Route.BookDetail then read the id from it (type safe)
-    private val bookId = savedStateHandle.toRoute<Route.BookDetail>().id
+    private val bookId = savedStateHandle.toRoute<Route.BookDetail>().id //from nav args
 
     private val _state = MutableStateFlow(BookDetailState())
     val state = _state //fetch here on start
         .onStart {
             fetchBookDescription()
-            //To add observeFavoriteStatus() for Local
+            observeFavoriteStatus()
         }
         .stateIn(
             viewModelScope,
@@ -43,9 +43,32 @@ class BookDetailViewModel(
                     book = action.book
                 ) }
             }
-            is BookDetailAction.OnFavoriteClick -> {}
+            //++ add update db
+            is BookDetailAction.OnFavoriteClick -> {
+                viewModelScope.launch {
+                    if(state.value.isFavorite) {
+                        bookRepository.deleteFromFavorites(bookId)
+                    } else {
+                        state.value.book?.let { book ->
+                            bookRepository.markAsFavorite(book)
+                        }
+                    }
+                }
+            }
             else -> Unit
         }
+    }
+
+
+    private fun observeFavoriteStatus() { //call this in onStart
+        bookRepository
+            .isBookFavorite(bookId)
+            .onEach { isFavorite ->
+                _state.update { it.copy(
+                    isFavorite = isFavorite
+                ) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun fetchBookDescription() {

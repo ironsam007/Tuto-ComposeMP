@@ -38,7 +38,10 @@ fun App() {
 
             navigation<Route.BookGraph>(startDestination = Route.BookList)
             {
-                composable<Route.BookList> {
+                composable<Route.BookList>(
+                    exitTransition = { slideOutHorizontally() },
+                    popEnterTransition = { slideInHorizontally()}
+                ){
                     //this vm only lives while BookListScreen is on BackStack
                     val viewModel = koinViewModel<BookListViewModel>()
 
